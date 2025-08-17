@@ -10,7 +10,7 @@ class Grafo(ABC):
         pass
 
     @abstractmethod
-    def sequencia_de_graus(self) -> list:
+    def sequencia_de_graus(self) -> list[int]:
         pass
 
     @abstractmethod
