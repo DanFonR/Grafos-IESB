@@ -1,8 +1,5 @@
 from Grafo import Grafo
-from GrafoEsparso import GrafoEsparso
 from collections.abc import Iterable
-from __future__ import annotations
-
 
 class GrafoDenso(Grafo):
     __matriz: list[list[int]]
@@ -55,23 +52,23 @@ class GrafoDenso(Grafo):
         return len(self.__rotulos)
 
     def sequencia_de_graus(self) -> list[int]:
-        return sorted([sum(1 for aresta in linha if aresta)
-                       for linha in self.__matriz])
+        return sorted(sum(1 for aresta in linha if aresta)
+                       for linha in self.__matriz)
 
-    def imprimir(self) -> None:
+    def imprimir(self, file=None) -> None:
         valores_str: list[str]
         rotulos: list[str] = [str(i) for i in self.__rotulos.keys()]
         header: str = (" " * max(len(i) for i in rotulos)
                        + " | " + " | ".join(rotulos))
 
-        print(header)
-        print("-" * len(header))
+        print(header, file=file)
+        print("-" * len(header), file=file)
 
         for (rotulo, valor) in self.__rotulos.items():
             valores_str = [str(i) for i in self.__matriz[valor]]
 
             print(f"{rotulo} | "
-                  + " | ".join(valores_str))
+                  + " | ".join(valores_str), file=file)
 
     # Atividade 2
 
@@ -110,37 +107,3 @@ class GrafoDenso(Grafo):
 
         return arestas
 
-    def is_subgrafo(self, outro_grafo: Grafo) -> bool:
-        if not isinstance(outro_grafo, Grafo):
-            raise TypeError("Comparacao invalida")
-
-        return (set(self.get_arestas()).issubset(
-                    set(outro_grafo.get_arestas()))
-                and set(self.get_vertices()).issubset(
-                        set(outro_grafo.get_vertices())))
-
-    def is_subgrafo_gerador(self, outro_grafo: Grafo) -> bool:
-        if not isinstance(outro_grafo, Grafo):
-            raise TypeError("Comparacao invalida")
-
-        return (set(self.get_vertices()) == set(outro_grafo.get_vertices())
-                and self.is_subgrafo(outro_grafo))
-
-    def is_subgrafo_induzido(self, outro_grafo: Grafo) -> bool:
-        arestas_outro: list[tuple[str, str]]
-        # possiveis arestas para cade vertice do subgrafo
-        arestas_outro_filtradas: list[tuple[str, str]]
-
-        if not isinstance(outro_grafo, Grafo):
-            raise TypeError("Comparacao invalida")        
-
-        if not self.is_subgrafo(outro_grafo):
-            return False
-        
-        arestas_outro = outro_grafo.get_arestas()
-        arestas_outro_filtradas = list(
-            filter(lambda aresta: (aresta[0] in self.get_vertices()
-                                   and aresta[1] in self.get_vertices()),
-                   arestas_outro))
-        
-        return set(arestas_outro_filtradas) == set(self.get_arestas())
