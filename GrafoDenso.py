@@ -81,10 +81,12 @@ class GrafoDenso(Grafo):
                        for j in range(self.numero_de_vertices()))
 
     def is_completo(self) -> bool:
-        return (all(self.__matriz[i][j]
-                    if i != j else not self.__matriz[i][j]
-                    for i in range(self.numero_de_vertices()))
-                    for j in range(self.numero_de_vertices()))
+        numero_vertices: int = self.numero_de_vertices()
+
+        return all(self.__matriz[i][j]
+                   if i != j else not self.__matriz[i][i]
+                   for i in range(numero_vertices)
+                   for j in range(numero_vertices))
 
     # Atividade 3
 
@@ -106,4 +108,3 @@ class GrafoDenso(Grafo):
                     arestas.append(tupla)
 
         return arestas
-

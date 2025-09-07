@@ -122,3 +122,83 @@ class Grafo(ABC):
                 return True
 
         return False # Nenhuma permutacao funcionou
+
+    # Atividade 5
+
+    def colorir_grafo(self) -> tuple[int, dict[str, int]]:
+        qtd_cores: int = 1
+        vertices: list[str] = self.get_vertices()
+        arestas: list[tuple[str, str]] = self.get_arestas()
+        resultado: dict[str, int|None]
+        resultado = self.__tentar_colorir_grafo(qtd_cores, vertices, arestas)
+
+        while not all(val != None for val in resultado.values()):
+            qtd_cores += 1
+            resultado = self.__tentar_colorir_grafo(qtd_cores, vertices, arestas)
+
+        return (qtd_cores, resultado)
+
+    @staticmethod
+    def __tentar_colorir_grafo(
+        qtd_cores: int, vertices: list[str],
+        arestas: list[tuple[str, str]]
+    ) -> dict[str, int|None]:
+        indice: int = 0 # aponta para vertices, serve para backtracking
+        indice_max: int = len(vertices)
+        cores: dict[str, int|None] = {vertice: None for vertice in vertices}
+
+        while 0 <= indice < indice_max:
+            cor: int = 0
+            vertices_adj: list[str] = [
+                vertice for vertice in vertices
+                if tuple(sorted((vertices[indice], vertice))) in arestas
+            ]
+            cores_adj: list[int|None] = [
+                cor for (vertice, cor) in cores.items()
+                if vertice in vertices_adj
+            ]
+
+            while cor in cores_adj: # percorre cores disponiveis
+                cor += 1
+
+            if cor == qtd_cores: # nao ha mais cores, realiza backtracking
+                indice -= 1
+
+            else:
+                if cores[vertices[indice]] != None: # houve backtracking
+                    cores[vertices[indice]] += 1 # incrementa e testa
+
+                    while cores[vertices[indice]] in cores_adj:
+                        cores[vertices[indice]] += 1
+
+                    if cores[vertices[indice]] == qtd_cores: # valor proibido
+                        cores[vertices[indice]] = None
+                        indice -= 1 # outro backtracking
+                else:
+                    cores[vertices[indice]] = cor
+                    indice += 1
+
+        return cores
+
+    # def colorir(self) -> tuple[int, dict[str, int]]: # versao sem backtracking
+    #     vertices: list[str] = self.get_vertices()
+    #     arestas: list[tuple[str, str]] = self.get_arestas()
+    #     cores: dict[str, int|None] = {v: None for v in vertices}
+
+    #     for vertice in vertices:
+    #         cor: int = 0
+    #         vertices_adj: list[str] = [
+    #             v for v in vertices if (vertice, v) in arestas
+    #             or (v, vertice) in arestas
+    #         ]
+    #         cores_adj: dict[str, int|None] = {
+    #             v: val for (v, val) in cores.items()
+    #             if v in vertices_adj
+    #         }
+
+    #         while cor in cores_adj.values():
+    #             cor += 1
+
+    #         cores[vertice] = cor
+
+    #     return (max(cores.values()) + 1, cores)
