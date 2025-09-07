@@ -82,20 +82,19 @@ class GrafoEsparso(Grafo):
     # Atividade 3
 
     def get_vertices(self) -> list[str]:
-        return sorted(self.__rotulos.keys())
+        return sorted(self.__vertices.keys())
 
     def get_arestas(self) -> list[tuple[str, str]]:
         arestas: list[tuple[str, str]]|list = list()
-        vertices_valores: dict[int, str] = {
-            indice: rotulo for rotulo, indice in self.__rotulos.items()
-        }
+        vertices_processados: list[str]|list = list()
 
-        for i in range(self.numero_de_vertices()):
-            for j in range(i, self.numero_de_vertices()):
-                if self.__matriz[i][j]:
-                    tupla: tuple[str, str] = tuple(sorted(
-                        (vertices_valores[j], vertices_valores[i])
-                    ))
-                    arestas.append(tupla)
+        for vertice in self.get_vertices():
+            for vertice2 in self.__vertices[vertice]:
+                if vertice2 in vertices_processados:
+                    continue
+
+                arestas.append(tuple(sorted((vertice, vertice2))))
+
+            vertices_processados.append(vertice)
 
         return arestas
