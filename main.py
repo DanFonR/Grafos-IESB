@@ -11,10 +11,14 @@ if __name__ != "__main__":
 def exec_all(*funcs: Callable[[None], None]) -> None:
     func: Callable[[None], None]
 
+    with open("resultado.txt", "w"): # limpa arquivo de saida
+        pass
+
     for func in funcs:
         func()
 
-def tee(exercicio: str) -> Callable[[None], None]:
+def tee(exercicio: str) -> Callable[[Callable[[TextIO|None], None]],
+                                    Callable[[None], None]]:
     """
     Imprime tanto para um arquivo 
     (resultado.txt) quanto para o console
@@ -25,7 +29,7 @@ def tee(exercicio: str) -> Callable[[None], None]:
         def wrapper() -> None:
             resultado: TextIO
 
-            with open("resultado.txt", "w") as resultado:
+            with open("resultado.txt", "a") as resultado:
                 print(f"{exercicio}".center(20, '-'), file=resultado)
                 print(file=resultado)
                 funcao_exercicio(file=resultado)
@@ -60,7 +64,7 @@ def matriz_adj(file: TextIO|None=None) -> None:
     grafo: GrafoDenso = GrafoDenso(vertices)
 
     for aresta in arestas:
-        grafo.adicionar_aresta(aresta[0], aresta[1])
+        grafo.adicionar_aresta(*aresta)
         print(f"Aresta adicionada entre {aresta[0]} e {aresta[1]}.",
               file=file)
 
@@ -96,7 +100,7 @@ def simples_nulo_completo(file: TextIO|None=None) -> None:
     """
 
     denso: GrafoDenso = GrafoDenso(5)
-    aresta: tuple[str, str]
+    nova_aresta: tuple[str, str]
 
     print("Matriz de Adjacencia:", file=file)
     denso.imprimir(file=file)
@@ -109,7 +113,7 @@ def simples_nulo_completo(file: TextIO|None=None) -> None:
         file=file
     )
 
-    aresta = ("0", "2")
+    aresta: tuple[str, str] = ("0", "2")
     denso.adicionar_aresta(*aresta)
     print(f"Aresta adicionada entre {aresta[0]} e {aresta[1]}\n", file=file)
 
@@ -124,8 +128,9 @@ def simples_nulo_completo(file: TextIO|None=None) -> None:
         file=file
     )
 
-    for i in map(tuple, ["01", "03", "04", "12", "13", "14", "23", "24", "34"]):
-        denso.adicionar_aresta(*i)
+    for nova_aresta in map(tuple, ["01", "03", "04", "12",
+                                   "13", "14", "23", "24", "34"]):
+        denso.adicionar_aresta(*nova_aresta)
 
     print("Matriz de Adjacencia:", file=file)
     denso.imprimir(file=file)
@@ -156,7 +161,15 @@ def subgrafos(file: TextIO|None=None) -> None:
     """
     Atividade 3
 
-    
+    Testa metodos de checagem de subgrafos:
+        - Subgrafo: todas as arestas e vertices de um grafo estao 
+                    contidos em outro
+        - Subgrafo Induzido: dos vertices do subgrafo, todas as arestas 
+                            do supergrafo que conectem
+                            esses vertices estao presentes no subgrafo
+        - Subgrafo Gerador: todos os vertices do supergrafo presentes no 
+                            subgrafo (pode ter nenhuma, algumas, ou todas as 
+                            arestas do supergrafo)
     """
 
     ...
@@ -166,7 +179,7 @@ def isomorfo(file: TextIO|None=None) -> None:
     """
     Atividade 4
 
-    
+    Testa se dois grafos sao isomorfos (equivalentes)
     """
 
     ...
@@ -177,7 +190,8 @@ def colorir(file: TextIO|None=None) -> None:
     Atividade 5
 
     Metodo para colorir um grafo usando _backtracking_. 
-    Reporta quantidade de cores minima e a cor de cada vertice (inteiros 0-N)
+    Reporta quantidade de cores minima N 
+    e a cor de cada vertice (inteiros [0,N])
     """
 
     denso: GrafoDenso = GrafoDenso(tuple("MACFQP"))
@@ -191,19 +205,30 @@ def colorir(file: TextIO|None=None) -> None:
 
     print("Matriz de Adjacencia", file=file)
     denso.imprimir(file=file)
-    print(file=file)
+    print("\n", file=file)
 
     qtd_cores: int
     cores: dict[str, int]
     qtd_cores, cores = denso.colorir_grafo()
 
-    print(f"\nnumero de cores: {qtd_cores}\n"
+    print(f"numero de cores: {qtd_cores}\n"
           f"cores: {cores}", file=file)
+
+@tee("Atividade 6")
+def caminho_minimo(file: TextIO|None=None) -> None:
+    """
+    Atividade 6
+
+    # Possivel Atividade 6: algoritmo de caminho minimo
+    # Aula ainda nao ocorreu
+    """
+    ...
 
 exec_all(
     matriz_adj,
     simples_nulo_completo,
     # subgrafos,
     # isomorfo,
-    colorir
+    colorir #,
+    # caminho_minimo
 )
